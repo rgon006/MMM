@@ -5,24 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Face-Controlled Piano Sheet Flipper</title>
   <link rel="stylesheet" href="style.css">
-  <!-- 使用CDN加载模型 -->
   <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@latest"></script>
   <script defer src="script.js"></script>
 </head>
 <body>
   <div id="loading">Loading models...</div>
-  <h1>Face-Controlled Piano Sheet Flipper</h1>
-  <input type="file" id="sheetInput" accept="image/*" multiple>
-  <div id="viewer">
-    <img id="sheetDisplay" src="" alt="Uploaded sheet music">
+  
+  <div class="container">
+    <h1>Face-Controlled Piano Sheet Flipper</h1>
+    
+    <!-- 添加明显的上传按钮 -->
+    <div class="upload-container">
+      <label for="sheetInput" class="upload-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Upload Sheet Music
+      </label>
+      <input type="file" id="sheetInput" accept="image/*" multiple style="display:none">
+    </div>
+    
+    <div id="viewer">
+      <img id="sheetDisplay" src="" alt="Uploaded sheet music">
+      <div id="pageIndicator">Page: 1/1</div>
+    </div>
   </div>
-  <video id="video" width="640" height="480" autoplay muted></video>
-  <canvas id="overlay" width="640" height="480"></canvas>
-
-  <script>
-    // 初始化时隐藏元素
-    document.getElementById('sheetInput').style.display = 'none';
-    document.getElementById('viewer').style.display = 'none';
-  </script>
+  
+  <div class="camera-container">
+    <video id="video" width="640" height="480" autoplay muted></video>
+    <canvas id="overlay" width="640" height="480"></canvas>
+  </div>
+  
+  <div class="instructions">
+    <p>Face detection enabled. Blink or open your mouth to turn pages.</p>
+  </div>
 </body>
 </html>

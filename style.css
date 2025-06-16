@@ -1,18 +1,17 @@
 body {
   font-family: Arial, sans-serif;
   text-align: center;
-  background: #f2f2f2;
+  background-color: #f0f0f0;
 }
-
-#video {
-  width: 300px;
-  margin-top: 20px;
-  border: 2px solid #444;
+#viewer {
+  margin: 20px;
 }
-
-#scoreDisplay img {
-  max-width: 90%;
-  max-height: 500px;
-  margin-top: 20px;
-  border: 2px solid #666;
+#sheetDisplay {
+  max-width: 80%;
+  max-height: 400px;
+  border: 2px solid #333;
+}
+video, canvas {
+  margin-top: 10px;
+  border: 2px solid #333;
 }

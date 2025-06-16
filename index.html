@@ -3,20 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Piano Page Flipper</title>
+  <title>Piano Sheet Flipper</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>钢琴谱自动翻页系统</h1>
-
-  <input type="file" id="fileInput" multiple accept="image/*">
-  <div id="scoreDisplay">
-    <img id="currentImage" />
+  <h1>Face-Controlled Piano Sheet Flipper</h1>
+  <input type="file" id="sheetInput" accept="image/jpeg,image/png" multiple />
+  <div id="viewer">
+    <img id="sheetDisplay" src="" alt="Uploaded sheet music will appear here" />
   </div>
+  <video id="video" width="640" height="480" autoplay muted></video>
+  <canvas id="overlay" width="640" height="480"></canvas>
 
-  <video id="video" autoplay muted></video>
-
-  <script src="https://unpkg.com/face-api.js"></script>
-  <script src="script.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+  <script defer src="script.js"></script>
 </body>
 </html>

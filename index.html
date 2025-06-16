@@ -5,12 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Face-Controlled Piano Sheet Flipper</title>
   <link rel="stylesheet" href="style.css">
-  <!-- 先加载face-api.js -->
   <script src="https://cdn.jsdelivr.net/npm/face-api.js@latest"></script>
-  <!-- 然后加载我们的脚本 -->
   <script defer src="script.js"></script>
   <style>
-    /* 加载动画 */
     .spinner {
       display: inline-block;
       width: 20px;
@@ -26,6 +23,18 @@
   </style>
 </head>
 <body>
-  <!-- 保持之前的HTML结构 -->
+  <h1>Face-Controlled Piano Sheet Flipper</h1>
+  <div>
+    <h2>上传钢琴谱</h2>
+    <input type="file" id="sheetInput" multiple />
+    <button class="upload-btn">上传乐谱</button>
+    <div id="loading" class="spinner" style="display:none;"></div>
+    <div id="sheetDisplay"></div>
+    <div id="pageIndicator"></div>
+  </div>
+  <div class="camera">
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="overlay" width="640" height="480"></canvas>
+  </div>
 </body>
 </html>

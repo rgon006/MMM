@@ -1,0 +1,18 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #f2f2f2;
+}
+
+#video {
+  width: 300px;
+  margin-top: 20px;
+  border: 2px solid #444;
+}
+
+#scoreDisplay img {
+  max-width: 90%;
+  max-height: 500px;
+  margin-top: 20px;
+  border: 2px solid #666;
+}

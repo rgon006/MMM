@@ -8,8 +8,8 @@ async function setup() {
   document.getElementById('loading').style.display = 'block';
   
   try {
-    await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
-    await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+    await faceapi.nets.tinyFaceDetector.loadFromUri('./models');
+    await faceapi.nets.faceLandmark68Net.loadFromUri('./models');
     
     const video = document.getElementById('video');
     const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
@@ -17,8 +17,8 @@ async function setup() {
     
     detectFaces();
   } catch (error) {
-    console.error('初始化失败:', error);
-    alert(`摄像头错误: ${error.message}`);
+    console.error('Initialization failed:', error);
+    alert(`Camera error: ${error.message}`);
   } finally {
     document.getElementById('loading').style.display = 'none';
   }
@@ -84,7 +84,7 @@ async function handleFileUpload(event) {
       uploadBtn.innerHTML = originalText;
     }, 3000);
   } catch (error) {
-    console.error('上传失败:', error);
+    console.error('Upload failed:', error);
     uploadBtn.innerHTML = `<span style="color:#e74c3c">✗</span> Upload failed`;
     setTimeout(() => {
       uploadBtn.innerHTML = originalText;

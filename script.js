@@ -97,15 +97,12 @@ function showPage() {
   const pageIndicator = document.getElementById('pageIndicator');
   
   if (sheetImages.length > 0 && currentPage < sheetImages.length) {
-    const imgElement = document.createElement('img');
-    imgElement.src = sheetImages[currentPage];
-    imgElement.style.width = '100%';
-    display.innerHTML = '';
-    display.appendChild(imgElement);
+    display.src = sheetImages[currentPage];
+    display.style.display = 'block';
     pageIndicator.textContent = `Page: ${currentPage + 1}/${sheetImages.length}`;
   } else {
-    display.innerHTML = 'No sheets loaded';
-    pageIndicator.textContent = '';
+    display.style.display = 'none';
+    pageIndicator.textContent = 'No sheets loaded';
   }
 }
 

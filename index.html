@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Face-Controlled Piano Sheet Flipper</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- Load face-api.js from CDN -->
-  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <!-- 使用CDN加载模型 -->
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@latest"></script>
   <script defer src="script.js"></script>
 </head>
 <body>
+  <div id="loading">Loading models...</div>
   <h1>Face-Controlled Piano Sheet Flipper</h1>
-  <input type="file" id="sheetInput" accept="image/jpeg,image/png" multiple />
+  <input type="file" id="sheetInput" accept="image/*" multiple>
   <div id="viewer">
-    <img id="sheetDisplay" src="" alt="Uploaded sheet music will appear here" />
+    <img id="sheetDisplay" src="" alt="Uploaded sheet music">
   </div>
   <video id="video" width="640" height="480" autoplay muted></video>
   <canvas id="overlay" width="640" height="480"></canvas>
+
+  <script>
+    // 初始化时隐藏元素
+    document.getElementById('sheetInput').style.display = 'none';
+    document.getElementById('viewer').style.display = 'none';
+  </script>
 </body>
 </html>

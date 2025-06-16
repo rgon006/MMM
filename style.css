@@ -1,17 +1,48 @@
 body {
-  font-family: Arial, sans-serif;
-  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
 }
+
+#loading {
+  position: absolute;
+  top: 20px;
+  color: #2c3e50;
+}
+
+h1 {
+  color: #34495e;
+  margin: 20px 0;
+}
+
+#sheetInput {
+  margin: 10px 0;
+}
+
 #viewer {
-  margin: 20px;
+  margin: 20px 0;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 80%;
+  max-width: 600px;
 }
+
 #sheetDisplay {
-  max-width: 80%;
-  max-height: 400px;
-  border: 2px solid #333;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 10px;
 }
+
 video, canvas {
-  margin-top: 10px;
-  border: 2px solid #333;
+  display: block;
+  margin: 10px auto;
+  border: 2px solid #bdc3c7;
+  border-radius: 4px;
 }

@@ -70,7 +70,7 @@ let flipCooldown = false;
         const topLip = d.landmarks.getTopLip();
         const bottomLip = d.landmarks.getBottomLip();
         const mouthHeight = bottomLip[0].y - topLip[0].y;
-        if (mouthHeight > 15) {   // 张嘴阈值
+        if (mouthHeight > -15) {   // 张嘴阈值
           nextPage();
           break;
         }

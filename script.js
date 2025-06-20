@@ -1,121 +1,122 @@
-const faceapi = window.faceapi;
-
+/* ========== 全局状态 ========== */
 let sheetImages = [];
 let currentPage = 0;
 let flipCooldown = false;
 
-async function setup() {
+/* ========== 立即执行的初始化 ========== */
+(async () => {
+  /* 0) 检查 faceapi 是否存在 */
+  if (!window.faceapi) {
+    alert('face-api.min.js 没加载到，检查 libs/face-api.min.js 路径或服务器根目录');
+    return;
+  }
+  const faceapi = window.faceapi;
+  console.log('✅ faceapi 准备就绪', faceapi);
+
+  /* 1) 显示加载动画 */
   document.getElementById('loading').style.display = 'block';
-  
+
   try {
-    await faceapi.nets.tinyFaceDetector.loadFromUri('./models');
-    await faceapi.nets.faceLandmark68Net.loadFromUri('./models');
-    
+    /* 2) 加载模型（相对 index.html，因此写 ./models 或 models 都行） */
+    await Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+      faceapi.nets.faceLandmark68Net.loadFromUri('/models')
+    ]);
+    console.log('✅ 模型加载完成');
+
+    /* 3) 打开摄像头 */
     const video = document.getElementById('video');
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { width: 640, height: 480 }
+    });
     video.srcObject = stream;
-    
+
+    /* 4) 启动人脸检测循环 */
     detectFaces();
-  } catch (error) {
-    console.error('Initialization failed:', error);
-    alert(`Camera error: ${error.message}`);
+  } catch (err) {
+    console.error('Initialization failed:', err);
+    alert(`Camera error: ${err.message}`);
+    return;
   } finally {
     document.getElementById('loading').style.display = 'none';
   }
 
-  const sheetInput = document.getElementById('sheetInput');
-  sheetInput.addEventListener('change', handleFileUpload);
-}
+  /* 5) 绑定文件上传事件 */
+  document.getElementById('sheetInput')
+          .addEventListener('change', handleFileUpload);
 
-function detectFaces() {
-  const video = document.getElementById('video');
-  const canvas = document.getElementById('overlay');
-  const displaySize = { width: video.width, height: video.height };
-  
-  faceapi.matchDimensions(canvas, displaySize);
-  
-  setInterval(async () => {
-    if (video.readyState !== 4) return;
-    
-    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
-    
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    const resizedDetections = faceapi.resizeResults(detections, displaySize);
-    faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-    
-    for (const detection of resizedDetections) {
-      const landmarks = detection.landmarks;
-      const topLip = landmarks.getTopLip();
-      const bottomLip = landmarks.getBottomLip();
-      const mouthHeight = bottomLip[0].y - topLip[0].y;
-      
-      if (mouthHeight > 15) {
-        nextPage();
-        break;
+  /* ---------- 其余函数 ---------- */
+  function detectFaces() {
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('overlay');
+    const displaySize = { width: video.width, height: video.height };
+    faceapi.matchDimensions(canvas, displaySize);
+
+    setInterval(async () => {
+      if (video.readyState !== 4) return;      // 摄像头未就绪
+      const detections = await faceapi
+        .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks();
+
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const resized = faceapi.resizeResults(detections, displaySize);
+      faceapi.draw.drawFaceLandmarks(canvas, resized);
+
+      for (const d of resized) {
+        const topLip = d.landmarks.getTopLip();
+        const bottomLip = d.landmarks.getBottomLip();
+        const mouthHeight = bottomLip[0].y - topLip[0].y;
+        if (mouthHeight > 15) {   // 张嘴阈值
+          nextPage();
+          break;
+        }
       }
-    }
-  }, 300);
-}
+    }, 300);
+  }
 
-async function handleFileUpload(event) {
-  const files = event.target.files;
-  if (!files.length) return;
+  async function handleFileUpload(e) {
+    const files = e.target.files;
+    if (!files.length) return;
+    const btn = document.querySelector('.upload-btn');
+    const txt = btn.innerHTML;
+    btn.innerHTML = '<div class="spinner"></div> Processing…';
 
-  const uploadBtn = document.querySelector('.upload-btn');
-  const originalText = uploadBtn.innerHTML;
-  uploadBtn.innerHTML = '<div class="spinner"></div> Processing...';
-  
-  try {
-    sheetImages.forEach(url => URL.revokeObjectURL(url));
-    sheetImages = [];
-    
-    for (const file of files) {
-      const imgUrl = URL.createObjectURL(file);
-      sheetImages.push(imgUrl);
+    try {
+      sheetImages.forEach(u => URL.revokeObjectURL(u));
+      sheetImages = Array.from(files, f => URL.createObjectURL(f));
+      currentPage = 0;
+      showPage();
+
+      btn.innerHTML = `<span style="color:#27ae60">✓</span> Loaded ${files.length}`;
+      setTimeout(() => (btn.innerHTML = txt), 3000);
+    } catch (err) {
+      console.error('Upload failed:', err);
+      btn.innerHTML = `<span style="color:#e74c3c">✗</span> Upload failed`;
+      setTimeout(() => (btn.innerHTML = txt), 3000);
     }
-    
-    currentPage = 0;
+  }
+
+  function showPage() {
+    const img = document.getElementById('sheetDisplay');
+    const indicator = document.getElementById('pageIndicator');
+
+    if (sheetImages.length) {
+      img.src = sheetImages[currentPage];
+      img.style.display = 'block';
+      indicator.textContent = `Page: ${currentPage + 1}/${sheetImages.length}`;
+    } else {
+      img.style.display = 'none';
+      indicator.textContent = 'No sheets loaded';
+    }
+  }
+
+  function nextPage() {
+    if (!sheetImages.length || flipCooldown) return;
+    flipCooldown = true;
+    currentPage = (currentPage + 1) % sheetImages.length;
     showPage();
-    
-    uploadBtn.innerHTML = `<span style="color:#27ae60">✓</span> Loaded ${files.length} sheet${files.length > 1 ? 's' : ''}`;
-    setTimeout(() => {
-      uploadBtn.innerHTML = originalText;
-    }, 3000);
-  } catch (error) {
-    console.error('Upload failed:', error);
-    uploadBtn.innerHTML = `<span style="color:#e74c3c">✗</span> Upload failed`;
-    setTimeout(() => {
-      uploadBtn.innerHTML = originalText;
-    }, 3000);
+    setTimeout(() => (flipCooldown = false), 1000);
   }
-}
-
-function showPage() {
-  const display = document.getElementById('sheetDisplay');
-  const pageIndicator = document.getElementById('pageIndicator');
-  
-  if (sheetImages.length > 0 && currentPage < sheetImages.length) {
-    display.src = sheetImages[currentPage];
-    display.style.display = 'block';
-    pageIndicator.textContent = `Page: ${currentPage + 1}/${sheetImages.length}`;
-  } else {
-    display.style.display = 'none';
-    pageIndicator.textContent = 'No sheets loaded';
-  }
-}
-
-function nextPage() {
-  if (sheetImages.length === 0 || flipCooldown) return;
-  
-  flipCooldown = true;
-  currentPage = (currentPage + 1) % sheetImages.length;
-  showPage();
-  
-  setTimeout(() => {
-    flipCooldown = false;
-  }, 1000);
-}
-
-document.addEventListener('DOMContentLoaded', setup);
+})();

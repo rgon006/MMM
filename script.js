@@ -17,12 +17,12 @@ let flipCooldown = false;
   document.getElementById('loading').style.display = 'block';
 
   try {
-    /* 2) 加载模型（相对 index.html，因此写 ./models 或 models 都行） */
-	const MODEL_URL = 'https://raw.githubusercontent.com/rgon006/MMM/main/models';
-	await Promise.all([
-		faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-		faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL)
-	]);
+    /* 2) 加载模型 */
+    const MODEL_URL = 'https://raw.githubusercontent.com/rgon006/MMM/main/models';
+    await Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+      faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL)
+    ]);
 
     console.log('✅ 模型加载完成');
 
@@ -55,7 +55,7 @@ let flipCooldown = false;
     faceapi.matchDimensions(canvas, displaySize);
 
     setInterval(async () => {
-      if (video.readyState !== 4) return;      // 摄像头未就绪
+      if (video.readyState !== 4) return; // 摄像头未就绪
       const detections = await faceapi
         .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks();
@@ -67,15 +67,39 @@ let flipCooldown = false;
       faceapi.draw.drawFaceLandmarks(canvas, resized);
 
       for (const d of resized) {
-        const topLip = d.landmarks.getTopLip();
-        const bottomLip = d.landmarks.getBottomLip();
-        const mouthHeight = bottomLip[0].y - topLip[0].y;
-        if (mouthHeight > -15) {   // 张嘴阈值
+        const mouth = d.landmarks.getMouth();
+
+        // Top lip approx: points 50–52 (outer) and 61–63 (inner)
+        const topLipY = averageY([
+          mouth[2],  // 50
+          mouth[3],  // 51 (top center)
+          mouth[4],  // 52
+          mouth[13], // 61
+          mouth[14], // 62
+          mouth[15]  // 63
+        ]);
+
+        // Bottom lip approx: points 56–58 (outer) and 65–67 (inner)
+        const bottomLipY = averageY([
+          mouth[8],  // 56
+          mouth[9],  // 57 (bottom center)
+          mouth[10], // 58
+          mouth[17], // 65
+          mouth[18], // 66
+          mouth[19]  // 67
+        ]);
+
+        const mouthHeight = bottomLipY - topLipY;
+        if (mouthHeight > 15) { // 张嘴阈值（可以调）
           nextPage();
           break;
         }
       }
     }, 300);
+  }
+
+  function averageY(points) {
+    return points.reduce((sum, pt) => sum + pt.y, 0) / points.length;
   }
 
   async function handleFileUpload(e) {

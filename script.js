@@ -18,10 +18,11 @@ let flipCooldown = false;
 
   try {
     /* 2) 加载模型（相对 index.html，因此写 ./models 或 models 都行） */
-    await Promise.all([
-      faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-      faceapi.nets.faceLandmark68Net.loadFromUri('/models')
-    ]);
+	await Promise.all([
+		faceapi.nets.tinyFaceDetector.loadFromUri('./models'),
+		faceapi.nets.faceLandmark68Net.loadFromUri('./models')
+	]);
+
     console.log('✅ 模型加载完成');
 
     /* 3) 打开摄像头 */

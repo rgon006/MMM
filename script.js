@@ -18,9 +18,10 @@ let flipCooldown = false;
 
   try {
     /* 2) 加载模型（相对 index.html，因此写 ./models 或 models 都行） */
+	const MODEL_URL = 'https://raw.githubusercontent.com/rgon006/MMM/main/models';
 	await Promise.all([
-		faceapi.nets.tinyFaceDetector.loadFromUri('./models'),
-		faceapi.nets.faceLandmark68Net.loadFromUri('./models')
+		faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+		faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL)
 	]);
 
     console.log('✅ 模型加载完成');
